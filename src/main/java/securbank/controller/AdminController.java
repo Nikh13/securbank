@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -229,7 +230,7 @@ public class AdminController {
 	}
 	
 	@PostMapping("/admin/user/delete/{id}")
-    public String deleteSubmit(@ModelAttribute User user, @PathVariable UUID id, BindingResult bindingResult) throws Exceptions {
+    public String deleteSubmit(HttpServletRequest request, @ModelAttribute User user, @PathVariable UUID id, BindingResult bindingResult) throws Exceptions {
 		User current = userService.getUserByIdAndActive(id);
 		if (current == null) {
 			//return "redirect:/error?code=404";
@@ -240,6 +241,13 @@ public class AdminController {
 			
 			//return "redirect:/error?code=401&path=request-unauthorised";
 			throw new Exceptions("401","Unauthorized request !!");
+		}
+		
+
+		X509Certificate[] certs = (X509Certificate[])request.getAttribute("javax.servlet.request.X509Certificate");
+		if(certs==null){
+			logger.info("No client side cert available");
+			throw new Exceptions("401","request.unauthorized");
 		}
 		
 		userService.deleteUser(id);

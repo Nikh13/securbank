@@ -56,7 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.and()
 			.exceptionHandling().accessDeniedPage("/error/access-denied")
 		.and()
-		.x509().userDetailsService((UserDetailsService)userService);
+		.x509().subjectPrincipalRegex("CN=.*?\\s(\\w+),").userDetailsService((UserDetailsService)userService);
 
     }
 //
